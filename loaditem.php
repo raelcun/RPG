@@ -13,6 +13,7 @@ if(isset($_GET['suf'])) { $suf=mysqli_real_escape_string($conn, $_GET['suf']); }
 $itempre = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM Itemstats WHERE name = '$pre' AND slot = 'prefix'"));
 $itembase = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM Itemstats WHERE name = '$base' AND slot != 'prefix' AND slot != 'suffix'"));
 $itemsuf = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM Itemstats WHERE name = '$suf' AND slot = 'suffix'"));
+mysqli_close($conn);
 
 $item[name] = trim($itempre[name] . " " . $itembase[name] . " " . $itemsuf[name]);
 $item[slot] = $itembase[slot];
@@ -33,17 +34,5 @@ echo "Item:<br>";
 echo "<table border='1' style='border-collapse:collapse;' cellpadding='5'><tr><th>Name</th><th>Slot</th><th>Description</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>";
 echo "<tr><td>" . $item['name'] . "</td><td>" . $item['slot'] . "</td><td>" . $item['des'] . "</td><td>" . $item['sdam'] . "</td><td>" . $item['pdam'] . "</td><td>" . $item['bdam'] . "</td><td>" . $item['sarm'] . "</td><td>" . $item['parm'] . "</td><td>" . $item['barm'] . "</td><td>" . $item['hpreg'] . "</td><td>" . $item['mpreg'] . "</td></tr>";
 echo "</table>";
-
-
-echo "Slashing damage: " . getEquips("SUM(sdam)",$searchname) . "<br>";
-echo "Piercing damage: " . getEquips("SUM(pdam)",$searchname) . "<br>";
-echo "Bludgeoning damage: " . getEquips("SUM(bdam)",$searchname) . "<br>";
-echo "<br>";
-echo "Slashing armor: " . getEquips("SUM(sarm)",$searchname) . "<br>";
-echo "Piercing armor: " . getEquips("SUM(parm)",$searchname) . "<br>";
-echo "Bludgeoning armor: " . getEquips("SUM(barm)",$searchname) . "<br>";
-
-
-mysqli_close($conn);
 
 ?>

@@ -14,7 +14,15 @@ function changestats(change) {
 
 <?php
 
-include "checklogin.php";
+if(isset($_COOKIE["PHPRPG"])) {
+  $cookie = explode("||",$_COOKIE["PHPRPG"]);
+  $conn=mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
+  $hero = mysqli_fetch_assoc(mysqli_query($conn,"SELECT pw FROM Hero WHERE name = '$cookie[0]'"));
+  mysqli_close($conn);
+  if($cookie[1] == $hero[pw]) {
+    header('Location: home.php');
+  }
+}
 
 function giveItem($pre, $base, $suf, $itemowner, $isequipped) {
 
@@ -57,7 +65,6 @@ if(isset($_POST['name'],$_POST['pw'],$_POST['race'],$_POST['prof'])) {
     switch($prof) {
       case "Barbarian":
         giveItem("Rusty", "Greataxe", "", $name, 1);
-        giveItem("", "Leather Armor", "", $name, 1);
         giveItem("", "Leather Gloves", "", $name, 1);
         giveItem("", "Leather Greaves", "", $name, 1);
         giveItem("", "Leather Boots", "", $name, 1);

@@ -30,7 +30,12 @@ function giveItem($pre, $base, $suf, $itemowner, $isequipped) {
   mysqli_close($conn);
 
 }
+giveItem("Rusty", "Long Sword", "", "Darksage", 1);
+giveItem("Weak", "Wooden Shield", "", "Darksage", 2);
+giveItem("", "Leather Armor", "", "Darksage", 1);
+giveItem("", "Leather Gloves", "", "Darksage", 1);
+giveItem("", "Leather Greaves", "", "Darksage", 1);
+giveItem("", "Leather Boots", "", "Darksage", 1);
 
-giveItem("", "Weak Wooden Shield", "", "Darksage", 2);
 
 ?>
