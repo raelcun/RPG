@@ -20,39 +20,51 @@ $hpmult = 1;
 $mpmult = 1;
 
 switch($hero[race]) {
-  case "Elf":
-    $hpmult = $hpmult - 0.15;
-    $mpmult = $mpmult + 0.3;
-    break;
-  case "Orc":
-    $hpmult = $hpmult + 0.3;
-    $mpmult = $mpmult - 0.15;
-    break;
-  case "Human":
-    $hpmult = $hpmult + 0.1;
-    $mpmult = $mpmult + 0.1;
-    break;
+    case "Elf":
+        $hpmult = $hpmult - 0.15;
+        $mpmult = $mpmult + 0.3;
+        break;
+    case "Orc":
+        $hpmult = $hpmult + 0.2;
+        $mpmult = $mpmult - 0.1;
+        break;
+    case "Human":
+        $hpmult = $hpmult + 0.1;
+        $mpmult = $mpmult + 0.1;
+        break;
+    case "Dwarf":
+        $hpmult = $hpmult + 0.30;
+        $mpmult = $mpmult + 0.15;
+        break;
 }
 
 switch($hero[prof]) {
-  case "Mage":
-    $hpmult = $hpmult - 0.15;
-    $mpmult = $mpmult + 0.3;
-    break;
-  case "Warrior":
-    $hpmult = $hpmult + 0.3;
-    $mpmult = $mpmult - 0.15;
-    break;
-  case "Archer":
-    $hpmult = $hpmult + 0.1;
-    $mpmult = $mpmult + 0.1;
-    break;
+    case "Mage":
+        $hpmult = $hpmult - 0.15;
+        $mpmult = $mpmult + 0.3;
+        break;
+    case "Barbarian":
+        $hpmult = $hpmult + 0.3;
+        $mpmult = $mpmult - 0.15;
+        break;
+    case "Archer":
+        $hpmult = $hpmult + 0.1;
+        $mpmult = $mpmult + 0.1;
+        break;
+    case "Knight":
+        $hpmult = $hpmult + 0.20;
+        $mpmult = $mpmult - 0.05;
+        break;
+    case "Priest":
+        $hpmult = $hpmult - 0.05;
+        $mpmult = $mpmult + 0.2;
+        break;
 }
 
 function getEquips($col,$hero) {
-  $conn = mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
-  return mysqli_fetch_assoc(mysqli_query($conn,"SELECT $col FROM Item WHERE equip > 0 AND owner = '$hero'"))[$col];
-  mysqli_close($conn);
+    $conn = mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
+    return mysqli_fetch_assoc(mysqli_query($conn,"SELECT $col FROM Item WHERE equip > 0 AND owner = '$hero'"))[$col];
+    mysqli_close($conn);
 }
 
 echo "<br>";
