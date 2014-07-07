@@ -11,6 +11,9 @@ include_once('Environment.php');
 
 class Login {
 
+    /**
+     * @return bool
+     */
     public static function isLoggedIn() {
         self::startSession();
         return $_SESSION['authenticated'] === true;
@@ -21,6 +24,11 @@ class Login {
         self::setLoggedIn(false);
     }
 
+    /**
+     * @param $username
+     * @param $password
+     * @return bool
+     */
     public static function logIn($username, $password) {
         self::startSession();
 
@@ -45,15 +53,9 @@ class Login {
         return $isValid;
     }
 
-    public static function createHero($username, $password, $race, $profession) {
-        self::startSession();
-    }
-
     public static function startSession() {
         if (session_status() === PHP_SESSION_NONE) session_start();
     }
-
-
 
     private static function setLoggedIn($bool) {
         self::startSession();

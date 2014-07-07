@@ -1,6 +1,7 @@
 <?php
 
 include "Includes/checklogin.php";
+include_once('Includes/common.php');
 
 echo "<a href='herolist.php'>Hero List</a><br>";
 echo "<a href='loadhero.php'>Load Hero</a><br>";

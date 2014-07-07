@@ -2,6 +2,13 @@
 <script type="text/javascript">
     window.onload = function ()
     {
-        setInterval(function() { $.post('refresh_session.php'); }, 600000); // refresh every 10 minutes
+        // refresh session every 10 minutes so users don't have to relog in
+        setInterval(function() { $.post('refresh_session.php'); }, 600000);
     };
 </script>
+
+<?php
+
+    \Classes\Environment::setMode(\Classes\Environment::MODE_DET_DEV);
+
+?>

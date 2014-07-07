@@ -11,11 +11,13 @@ namespace Classes;
 include_once('Environment.php');
 
 class Hero {
+    // race constants
     const RACE_HUMAN = 'HUMAN';
     const RACE_ELF = 'ELF';
     const RACE_ORC = 'ORC';
     const RACE_DWARF = 'DWARF';
 
+    // profession constants
     const PROF_BARBARIAN = 'BARBARIAN';
     const PROF_ARCHER = 'ARCHER';
     const PROF_MAGE = 'MAGE';
@@ -73,6 +75,7 @@ class Hero {
     public function setBattleplan($battleplan) { $this->battleplan = $battleplan; return $this->updateDBAttribute('battleplan', $battleplan, \PDO::PARAM_STR); }
 
     public function setRace($race) {
+        // validate race
         $validRace = self::parseRace($race);
         if ($validRace === false) return false;
 
@@ -81,6 +84,7 @@ class Hero {
     }
 
     public function setProfession($prof) {
+        // validate profession
         $validProf = self::parseProfession($prof);
         if ($validProf === false) return false;
 
@@ -88,6 +92,10 @@ class Hero {
         return $this->updateDBAttribute('prof', $validProf, \PDO::PARAM_STR);
     }
 
+    /**
+     * @param $name
+     * @return Hero Hero object with attributes populated by database
+     */
     public static function getHeroByName($name) {
         $hero = new Hero();
         $pdo = Environment::getDBConn();
@@ -118,6 +126,10 @@ class Hero {
         return $hero;
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public static function doesHeroExist($name) {
         $pdo = Environment::getDBConn();
 
@@ -126,6 +138,11 @@ class Hero {
         return $stmt->rowCount() >= 1;
     }
 
+    /** Create hero in database and returns it
+     * @param $name
+     * @param $password
+     * @return bool|Hero|null
+     */
     public static function createHero($name, $password) {
         if (self::doesHeroExist($name)) return false;
 
@@ -141,15 +158,32 @@ class Hero {
         return null;
     }
 
+    /** Validation race string format
+     * @param $race
+     * @return bool|string Valid race if validation is successful, false otherwise
+     */
     public static function parseRace($race) {
         return self::validateStringIC($race, array(self::RACE_HUMAN, self::RACE_DWARF, self::RACE_ELF, self::RACE_ORC));
     }
 
+    /** Validate profession string format
+     * @param $prof
+     * @return bool|string Valid profession if validation is successful, false otherwise
+     */
     public static function parseProfession($prof) {
         return self::validateStringIC($prof, array(self::PROF_ARCHER, self::PROF_BARBARIAN, self::PROF_KNIGHT, self::PROF_MAGE, self::PROF_PRIEST));
     }
 
+    /**
+     * @param $attribute attribute to change (not escaped)
+     * @param $newValue value to change attribute to
+     * @param $type typeof PDO::PARAM_XXX
+     * @return bool
+     */
     private function updateDBAttribute($attribute, $newValue, $type) {
+        // make sure attribute is escaped since it can't be used as a PDO parameter
+        $attribute = mysql_real_escape_string($attribute);
+
         $pdo = Environment::getDBConn();
         $stmt = $pdo->prepare("UPDATE hero SET $attribute = :newValue WHERE id = :id");
         $stmt->bindValue(':newValue', $newValue, $type);
