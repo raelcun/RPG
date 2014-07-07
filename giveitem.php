@@ -1,6 +1,7 @@
 <?php
 
-include "checklogin.php";
+include_once("Includes/checklogin.php");
+include_once('Includes/common.php');
 
 function giveItem($pre, $base, $suf, $itemowner, $isequipped) {
 

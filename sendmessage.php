@@ -1,6 +1,7 @@
 <?php
 
-include "checklogin.php";
+include_once("Includes/checklogin.php");
+include_once('Includes/common.php');
 
 if(isset($_POST['to'],$_POST['message'])) {
   $conn=mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");

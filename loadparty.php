@@ -1,6 +1,7 @@
 <?php
 
-include "checklogin.php";
+include_once("Includes/checklogin.php");
+include_once('Includes/common.php');
 
 echo "<form name='partysearch' action='loadparty.php' method='GET'><input type='text' name='searchname'><input type='submit' value='Submit'></form>";
 

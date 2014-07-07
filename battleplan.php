@@ -48,7 +48,8 @@ function change(from, row, col) {
 </script>
 <?php
 
-include "checklogin.php";
+include_once("Includes/checklogin.php");
+include_once('Includes/common.php');
 
 if(isset($_GET['plans'])) {
   foreach($_GET['plans'] as $plans) {
