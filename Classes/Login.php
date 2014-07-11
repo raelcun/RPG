@@ -16,7 +16,7 @@ class Login {
      */
     public static function isLoggedIn() {
         self::startSession();
-        return $_SESSION['authenticated'] === true;
+        return array_key_exists('authenticated', $_SESSION) and $_SESSION['authenticated'] === true;
     }
 
     public static function logOut() {

@@ -167,6 +167,24 @@ class Hero {
     }
 
     /**
+     * @return array Array of heroes
+     */
+    // TODO: Makes many calls to db through getHeroByName which is unnecessary, should make one call and parse entire list
+    public static function getAllHeroes() {
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('SELECT name FROM hero');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+
+        $heroList = array();
+        foreach ($result as $row) {
+            array_push($heroList, self::getHeroByName($row['name']));
+        }
+
+        return $heroList;
+    }
+
+    /**
      * @param $name
      * @return bool
      */
