@@ -10,8 +10,10 @@ namespace Classes;
 
 include_once('Environment.php');
 include_once('Item.php');
+include_once('InventoryItem.php');
 
 class Hero {
+
     // race constants
     const RACE_HUMAN = 'HUMAN';
     const RACE_ELF = 'ELF';
@@ -41,7 +43,13 @@ class Hero {
     private $act;
     private $per;
     private $gold;
-    private $battleplan;
+    //private $battleplan;
+    private $inventory = array(); // array of InventoryItem
+
+    /**
+     * Parameterless constructor for internally creating Heroes
+     */
+    private function __construct() { }
 
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
@@ -59,135 +67,88 @@ class Hero {
     public function getActions() { return $this->act; }
     public function getPerception() { return $this->per; }
     public function getGold() { return $this->gold; }
-    public function getBattleplan() { return $this->battleplan; }
+    //public function getBattleplan() { return $this->battleplan; } // TODO: implement Battleplan object and enable this function
+    public function getInventory() { return $this->inventory; }
 
-    public function setXp($xp) { $this->xp = $xp; return $this->updateDBAttribute('xp', $xp, \PDO::PARAM_INT, \PDO::PARAM_STR); }
-    public function setParty($party) { $this->party = $party; return $this->updateDBAttribute('party', $party, \PDO::PARAM_STR); }
-    public function setStrength($str) { $this->str = $str; return $this->updateDBAttribute('str', $str, \PDO::PARAM_INT); }
-    public function setConstitution($con) { $this->con = $con; return $this->updateDBAttribute('con', $con, \PDO::PARAM_INT); }
-    public function setAgility($agi) { $this->agi = $agi; return $this->updateDBAttribute('agi', $agi, \PDO::PARAM_INT); }
-    public function setDexterity($dex) { $this->dex = $dex; return $this->updateDBAttribute('dex', $dex, \PDO::PARAM_INT); }
-    public function setIntelligence($int) { $this->int = $int; return $this->updateDBAttribute('int', $int, \PDO::PARAM_INT); }
-    public function setWisdom($wis) { $this->wis = $wis; return $this->updateDBAttribute('wis', $wis, \PDO::PARAM_INT); }
-    public function setCharisma($cha) { $this->cha = $cha; return $this->updateDBAttribute('cha', $cha, \PDO::PARAM_INT); }
-    public function setActions($act) { $this->act = $act; return $this->updateDBAttribute('act', $act, \PDO::PARAM_INT); }
-    public function setPerception($per) { $this->per = $per; return $this->updateDBAttribute('per', $per, \PDO::PARAM_INT); }
-    public function setGold($gold) { $this->gold = $gold; return $this->updateDBAttribute('gold', $gold, \PDO::PARAM_INT); }
-    public function setBattleplan($battleplan) { $this->battleplan = $battleplan; return $this->updateDBAttribute('battleplan', $battleplan, \PDO::PARAM_STR); }
-
-    public function setRace($race) {
-        // validate race
-        $validRace = self::parseRace($race);
-        if ($validRace === false) return false;
-
-        $this->race = $validRace;
-        return $this->updateDBAttribute('race', $validRace, \PDO::PARAM_STR);
+    public function increaseXp($amount) {
+        if (!is_numeric($amount)) return false;
+        if (!self::updateDBAttribute('xp', $this->xp + $amount, \PDO::PARAM_INT)) return false;
+        $this->xp += $amount;
+        return true;
     }
 
-    public function setProfession($prof) {
-        // validate profession
-        $validProf = self::parseProfession($prof);
-        if ($validProf === false) return false;
-
-        $this->prof = $validProf;
-        return $this->updateDBAttribute('prof', $validProf, \PDO::PARAM_STR);
+    public function joinParty($partyName) {
+        if (!is_string($partyName)) return false;
+        if (!self::updateDBAttribute('partyName', $partyName, \PDO::PARAM_STR)) return false;
+        $this->party = $partyName;
+        return true;
     }
 
-    public function initialize($race, $prof) {
-        $this->setRace($race);
-        $this->setProfession($prof);
+    public function increaseGold($amount) {
+        if (!is_numeric($amount)) return false;
+        if (!self::updateDBAttribute('gold', $this->gold + $amount, \PDO::PARAM_INT)) return false;
+        $this->gold += $amount;
+        return true;
+    }
 
-        switch($prof) {
-            case self::PROF_BARBARIAN:
-//                giveItem("Rusty", "Greataxe", "", $name, 1);
-//                giveItem("", "Leather Gloves", "", $name, 1);
-//                giveItem("", "Leather Greaves", "", $name, 1);
-//                giveItem("", "Leather Boots", "", $name, 1);
-                break;
-            case self::PROF_MAGE:
-//                giveItem("", "Staff", "", $name, 1);
-//                giveItem("", "Spellbook", "", $name, 2);
-//                giveItem("", "Mage Robe", "", $name, 1);
-                break;
-            case self::PROF_ARCHER:
-//                giveItem("", "Bow", "", $name, 1);
-//                giveItem("", "Leather Armor", "", $name, 1);
-//                giveItem("", "Leather Gloves", "", $name, 1);
-//                giveItem("", "Leather Greaves", "", $name, 1);
-//                giveItem("", "Leather Boots", "", $name, 1);
-                break;
-            case self::PROF_PRIEST:
-//                giveItem("Frail", "Mace", "", $name, 1);
-//                giveItem("", "Holy Symbol", "", $name, 2);
-//                giveItem("", "Priest Robe", "", $name, 1);
-                break;
-            case self::PROF_KNIGHT:
-//                giveItem("Rusty", "Long Sword", "", $name, 1);
-//                giveItem("Weak", "Wooden Shield", "", $name, 2);
-//                giveItem("", "Leather Armor", "", $name, 1);
-//                giveItem("", "Leather Gloves", "", $name, 1);
-//                giveItem("", "Leather Greaves", "", $name, 1);
-//                giveItem("", "Leather Boots", "", $name, 1);
-                break;
+    public function receiveItem($itemName, $equip = 0) {
+        if (is_null($this->inventory)) $this->inventory = array();
+        $item = \Classes\Item::getItemByFullName($itemName);
+        if (is_null($item)) return false;
+
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('INSERT INTO inventory (item, owner, equip) VALUES (:itemId, :ownerId, :equip)');
+        $stmt->bindValue(':itemId', $item->getId(), \PDO::PARAM_INT);
+        $stmt->bindValue(':ownerId', $this->getId(), \PDO::PARAM_INT);
+        $stmt->bindValue(':equip', $equip, \PDO::PARAM_INT);
+        if ($stmt->execute() === false) return false;
+
+        array_push($this->inventory, $item);
+
+        return true;
+    }
+
+    public function dropInventoryItem($inventoryItem) {
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('DELETE FROM inventory WHERE id = :id');
+        $stmt->bindValue(':id', $inventoryItem->getId(), \PDO::PARAM_INT);
+        if ($stmt->execute() === false) return false; // failed to remove item
+
+        foreach ($this->inventory as $key => $innerItem) {
+            if ($innerItem->getId() === $inventoryItem->getId()) {
+                array_splice($this->inventory, $key, 1);
+                return true;
+            }
         }
+
+        return false; // failed to remove item from inventory array
     }
 
-    /**
-     * @param $name
-     * @return Hero Hero object with attributes populated by database
-     */
     public static function getHeroByName($name) {
-        $hero = new Hero();
         $pdo = Environment::getDBConn();
         $stmt = $pdo->prepare('SELECT * FROM hero WHERE name = :name');
         $stmt->execute(array(':name' => $name));
+        if ($stmt->rowCount() === 0) return false;
         $result = $stmt->fetch();
-
-        $hero->id = $result['id'];
-        $hero->name = $result['name'];
-        $hero->race = $result['race'];
-        $hero->prof = $result['prof'];
-        $hero->xp = $result['xp'];
-        $hero->party = $result['party'];
-        $hero->str = $result['str'];
-        $hero->con = $result['con'];
-        $hero->agi = $result['agi'];
-        $hero->dex = $result['dex'];
-        $hero->int = $result['int'];
-        $hero->wis = $result['wis'];
-        $hero->cha = $result['cha'];
-        $hero->act = $result['act'];
-        $hero->per = $result['per'];
-        $hero->gold = $result['gold'];
-        $hero->battleplan = $result['battleplan'];
-
         $pdo = null; // close connection
 
-        return $hero;
+        return self::loadHeroFromArray($result);
     }
 
-    /**
-     * @return array Array of heroes
-     */
-    // TODO: Makes many calls to db through getHeroByName which is unnecessary, should make one call and parse entire list
     public static function getAllHeroes() {
         $pdo = Environment::getDBConn();
-        $stmt = $pdo->prepare('SELECT name FROM hero');
+        $stmt = $pdo->prepare('SELECT * FROM hero');
         $stmt->execute();
         $result = $stmt->fetchAll();
 
         $heroList = array();
         foreach ($result as $row) {
-            array_push($heroList, self::getHeroByName($row['name']));
+            array_push($heroList, self::loadHeroFromArray($row));
         }
 
         return $heroList;
     }
 
-    /**
-     * @param $name
-     * @return bool
-     */
     public static function doesHeroExist($name) {
         $pdo = Environment::getDBConn();
 
@@ -196,40 +157,70 @@ class Hero {
         return $stmt->rowCount() >= 1;
     }
 
-    /** Create hero in database and returns it
-     * @param $name
-     * @param $password
-     * @return bool|Hero|null
-     */
-    public static function createHero($name, $password) {
+    public static function createHero($name, $password, $race, $prof) {
         if (self::doesHeroExist($name)) return false;
 
         $pdo = Environment::getDBConn();
-        $stmt = $pdo->prepare('INSERT INTO hero (name, pw) VALUES (:name, :pw)');
-        $result = $stmt->execute(array(':name' => $name, ':pw' => sha1($password)));
+        $stmt = $pdo->prepare('INSERT INTO hero (name, pw, race, prof) VALUES (:name, :pw, :race, :prof)');
+        $result = $stmt->execute(array(':name' => $name, ':pw' => sha1($password), ':race' => $race, ':prof' => $prof));
         $pdo = null;
 
         if ($result) {
-            return self::getHeroByName($name);
+            $hero = self::getHeroByName($name);
+
+            switch($prof) {
+                default:
+                    $hero->receiveItem("Dagger");
+                    $hero->receiveItem("Leather Greaves");
+                    $hero->receiveItem("Leather Gloves");
+                    $hero->receiveItem("Leather Armor");
+                    $hero->receiveItem("Leather Boots");
+                    break;
+            }
         }
 
-        return null;
+        return false;
     }
 
-    /** Validation race string format
-     * @param $race
-     * @return bool|string Valid race if validation is successful, false otherwise
-     */
-    public static function parseRace($race) {
-        return self::validateStringIC($race, array(self::RACE_HUMAN, self::RACE_DWARF, self::RACE_ELF, self::RACE_ORC));
+    public static function deleteHero($name) {
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('DELETE FROM hero WHERE name = :name');
+        $pdo = null;
+        return $stmt->execute(array(':name' => $name));
     }
 
-    /** Validate profession string format
-     * @param $prof
-     * @return bool|string Valid profession if validation is successful, false otherwise
-     */
-    public static function parseProfession($prof) {
-        return self::validateStringIC($prof, array(self::PROF_ARCHER, self::PROF_BARBARIAN, self::PROF_KNIGHT, self::PROF_MAGE, self::PROF_PRIEST));
+    private static function loadHeroFromArray($arr) {
+        $hero = new Hero();
+        $hero->id = (int)$arr['id'];
+        $hero->name = $arr['name'];
+        $hero->race = $arr['race'];
+        $hero->prof = $arr['prof'];
+        $hero->xp = (int)$arr['xp'];
+        $hero->party = $arr['party'];
+        $hero->str = (int)$arr['str'];
+        $hero->con = (int)$arr['con'];
+        $hero->agi = (int)$arr['agi'];
+        $hero->dex = (int)$arr['dex'];
+        $hero->int = (int)$arr['int'];
+        $hero->wis = (int)$arr['wis'];
+        $hero->cha = (int)$arr['cha'];
+        $hero->act = (int)$arr['act'];
+        $hero->per = (int)$arr['per'];
+        $hero->gold = (int)$arr['gold'];
+
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('
+            SELECT inv.id AS inventoryId,inv.equip AS equip,item.*
+            FROM inventory AS inv
+            INNER JOIN items AS item ON inv.item = item.id
+            WHERE owner = :owner');
+        $stmt->execute(array(':owner' => $hero->id));
+        $result = $stmt->fetchAll();
+        foreach ($result as $elem) {
+            array_push($hero->inventory, InventoryItem::loadInventoryItemFromArray($elem, array('id' => $elem['inventoryId'], 'equip' => $elem['equip'])));
+        }
+
+        return $hero;
     }
 
     /**
@@ -247,24 +238,6 @@ class Hero {
         $stmt->bindValue(':newValue', $newValue, $type);
         $stmt->bindValue(':id', intval($this->id), \PDO::PARAM_INT);
         if ($stmt->execute()) return true;
-        return false;
-    }
-
-    /**
-     * Validates a given string case insensitively as a
-     * string of valid format provided in an array.
-     * @param $validate string to validate
-     * @param $strArray array of strings with valid format
-     * @return mixed valid string on success, false on failure
-     */
-    private static function validateStringIC($validate, $strArray) {
-        if (is_array($strArray) === false) return false;
-
-        foreach ($strArray as $str) {
-            if (strtoupper($validate) === strtoupper($str))
-                return $str;
-        }
-
         return false;
     }
 }
