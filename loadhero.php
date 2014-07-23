@@ -1,103 +1,117 @@
 <?php
 
-include_once("Includes/checklogin.php");
-include_once('Includes/common.php');
+require_once('/Includes/checklogin.php');
+require_once('/Includes/common.php');
+require_once('/Classes/Hero.php');
+require_once('/Includes/menu.php');
 
-echo "<form name='herosearch' action='loadhero.php' method='GET'><input type='text' name='searchname'><input type='submit' value='Submit'></form>";
+use \Classes\Hero as Hero;
+use \Classes\Item as Item;
 
-if(!isset($_GET['searchname'])) { exit(); }
+if(!array_key_exists('searchName', $_GET)) { // show form if no hero has been selected to be shown
+    echo "<form name='herosearch' action='loadhero.php' method='GET'><input type='text' name='searchName'><input type='submit' value='Submit'></form>";
+} else { // if hero has been selected to be shown...
+    $heroName = $_GET['searchName'];
+    if (!Hero::doesHeroExist($heroName)) { echo "Hero does not exist!"; exit(); }
 
-$conn=mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
-$searchname=mysqli_real_escape_string($conn, $_GET['searchname']);
-$hero = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM Hero WHERE name = '$searchname'"));
+    // get hero information from the database
+    $hero = Hero::getHeroByName($heroName);
 
-echo "Hero:<br>";
+    // cache hero information for ease of use
+    $heroName = $hero->getName();
+    $heroRace = $hero->getRace();
+    $heroProf = $hero->getProfession();
+    $heroXp = $hero->getXp();
+    $heroParty = $hero->getParty();
+    $heroStr = $hero->getStrength();
+    $heroCon = $hero->getConstitution();
+    $heroAgi = $hero->getAgility();
+    $heroDex = $hero->getDexterity();
+    $heroInt = $hero->getIntelligence();
+    $heroWis = $hero->getWisdom();
+    $heroCha = $hero->getCharisma();
+    $heroAct = $hero->getActions();
+    $heroPer = $hero->getPerception();
+    $heroGold = $hero->getGold();
+    $heroMaxHp = $hero->getMaxHp();
+    $heroMaxMp = $hero->getMaxMp();
 
-echo "<table border='1' style='border-collapse:collapse;' cellpadding='5'><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>";
-echo "<tr><td><a href='loadhero.php?searchname=$hero[name]'>$hero[name]</a></td><td>$hero[race]</td><td>$hero[prof]</td><td>$hero[xp]</td><td><a href='loadparty.php?searchname=$hero[party]'>$hero[party]</a></td><td>$hero[str]</td><td>$hero[int]</td><td>$hero[dex]</td><td>$hero[agi]</td><td>$hero[wis]</td><td>$hero[per]</td><td>$hero[act]</td><td>$hero[con]</td><td>$hero[cha]</td><td>$hero[gold]</td></tr>";
-echo "</table>";
+    // cache inventory stats
+    $heroHpRegen = $hero->getInventory()->getTotalHpRegen();
+    $heroMpRegen = $hero->getInventory()->getTotalMpRegen();
+    $heroSDAM = $hero->getInventory()->getTotalSDAM();
+    $heroPDAM = $hero->getInventory()->getTotalPDAM();
+    $heroBDAM = $hero->getInventory()->getTotalBDAM();
+    $heroSARM = $hero->getInventory()->getTotalSARM();
+    $heroPARM = $hero->getInventory()->getTotalPARM();
+    $heroBARM = $hero->getInventory()->getTotalBARM();
 
-$hpmult = 1;
-$mpmult = 1;
+    // cache equipment slots
+    $heroMainHand = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_HAND AND $item->getEquip() === 1; });
+    $heroMainHandName = count($heroMainHand) === 0 ? 'None' : $heroMainHand[0]->getItem()->getFullName();
 
-switch($hero[race]) {
-  case "Elf":
-    $hpmult = $hpmult - 0.15;
-    $mpmult = $mpmult + 0.3;
-    break;
-  case "Orc":
-    $hpmult = $hpmult + 0.2;
-    $mpmult = $mpmult - 0.1;
-    break;
-  case "Human":
-    $hpmult = $hpmult + 0.1;
-    $mpmult = $mpmult + 0.1;
-    break;
-case "Dwarf":
-    $hpmult = $hpmult + 0.30;
-    $mpmult = $mpmult + 0.15;
-    break;
+    $heroOffHand = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_HAND AND $item->getEquip() === 2; });
+    $heroOffHandName = count($heroOffHand) === 0 ? 'None' : $heroOffHand[0]->getItem()->getFullName();
+
+    $heroHead = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_HEAD; });
+    $heroHeadName = count($heroHead) === 0 ? 'None' : $heroHead[0]->getItem->getFullName();
+
+    $heroTorso = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_TORSO; });
+    $heroTorsoName = count($heroTorso) === 0 ? 'None' : $heroTorso[0]->getItem->getFullName();
+
+    $heroArms = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_ARMS; });
+    $heroArmsName = count($heroArms) === 0 ? 'None' : $heroArms[0]->getItem->getFullName();
+
+    $heroLegs = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_LEGS; });
+    $heroLegsName = count($heroLegs) === 0 ? 'None' : $heroLegs[0]->getItem->getFullName();
+
+    $heroFeet = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_FEET; });
+    $heroFeetName = count($heroFeet) === 0 ? 'None' : $heroFeet[0]->getItem->getFullName();
+
+
+
+    echo "Hero:<br />\n";
+    echo "<table border=\"1\" style=\"border-collapse:collapse;\" cellpadding=\"5\"><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>";
+    echo "<tr>\n";
+    echo "<td><a href=\"loadhero.php?searchName=$heroName\">$heroName</a></td>\n";
+    echo "<td>$heroRace</td>\n";
+    echo "<td>$heroProf</td>\n";
+    echo "<td>$heroXp</td>\n";
+    echo "<td>$heroParty</td>\n";
+    echo "<td>$heroStr</td>\n";
+    echo "<td>$heroInt</td>\n";
+    echo "<td>$heroDex</td>\n";
+    echo "<td>$heroAgi</td>\n";
+    echo "<td>$heroWis</td>\n";
+    echo "<td>$heroPer</td>\n";
+    echo "<td>$heroAct</td>\n";
+    echo "<td>$heroCon</td>\n";
+    echo "<td>$heroCha</td>\n";
+    echo "<td>$heroGold</td>\n";
+    echo "</td>\n";
+    echo "</table>\n";
+
+    echo "<br><a href='sendmessage.php?to=$heroName' target='_blank'>Send a message</a><br>\n";
+    echo "<br/>HP: $heroMaxHp\n";
+    echo "<br/>MP: $heroMaxMp\n";
+    echo "<br/>HP Regen: $heroHpRegen\n";
+    echo "<br/>MP Regen: $heroMpRegen\n";
+    echo "<br>\n";
+
+    echo "<br/>Slashing damage: $heroSDAM\n";
+    echo "<br/>Piercing damage: $heroPDAM\n";
+    echo "<br/>Bludgeoning damage: $heroBDAM\n";
+    echo "<br/><br/>\n";
+    echo "<br/>Slashing armor: $heroSARM\n";
+    echo "<br/>Piercing armor: $heroPARM\n";
+    echo "<br/>Bludgeoning armor: $heroBARM\n";
+
+    echo "<br/>Items:<br/>\n";
+    echo "<br/>Main Hand: $heroMainHandName\n";
+    echo "<br/>Off Hand: $heroOffHandName\n";
+    echo "<br/>Head: $heroHeadName\n";
+    echo "<br/>Torso: $heroTorsoName\n";
+    echo "<br/>Arms: $heroArmsName\n";
+    echo "<br/>Legs: $heroLegsName\n";
+    echo "<br/>Feet: $heroFeetName\n";
 }
-
-switch($hero[prof]) {
-  case "Mage":
-    $hpmult = $hpmult - 0.15;
-    $mpmult = $mpmult + 0.3;
-    break;
-  case "Barbarian":
-    $hpmult = $hpmult + 0.3;
-    $mpmult = $mpmult - 0.15;
-    break;
-  case "Archer":
-    $hpmult = $hpmult + 0.1;
-    $mpmult = $mpmult + 0.1;
-    break;
-  case "Knight":
-    $hpmult = $hpmult + 0.20;
-    $mpmult = $mpmult - 0.05;
-    break;
-  case "Priest":
-    $hpmult = $hpmult - 0.05;
-    $mpmult = $mpmult + 0.2;
-    break;
-}
-
-function getEquips($col,$hero) {
-  $conn = mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
-  return mysqli_fetch_assoc(mysqli_query($conn,"SELECT $col FROM Item WHERE equip > 0 AND owner = '$hero'"))[$col];
-  mysqli_close($conn);
-}
-
-echo "<br>";
-echo "<a href='sendmessage.php?to=$searchname' target='_blank'>Send a message</a><br>";
-echo "<br>";
-echo "HP: " . floor((5*$hero[con]+3*$hero[str])*$hpmult);
-echo "<br>";
-echo "MP: " . floor((5*$hero[int]+3*$hero[wis])*$mpmult);
-echo "<br>";
-echo "HP Regen: " . getEquips("SUM(hpreg)", $searchname);
-echo "<br>";
-echo "MP Regen: " . getEquips("SUM(mpreg)", $searchname);
-echo "<br><br>";
-
-//echo ": " . array_sum(array_map(function($temp){return $temp[];},$gear)) . "<br>";
-echo "Slashing damage: " . getEquips("SUM(sdam)",$searchname) . "<br>";
-echo "Piercing damage: " . getEquips("SUM(pdam)",$searchname) . "<br>";
-echo "Bludgeoning damage: " . getEquips("SUM(bdam)",$searchname) . "<br>";
-echo "<br>";
-echo "Slashing armor: " . getEquips("SUM(sarm)",$searchname) . "<br>";
-echo "Piercing armor: " . getEquips("SUM(parm)",$searchname) . "<br>";
-echo "Bludgeoning armor: " . getEquips("SUM(barm)",$searchname) . "<br>";
-
-echo "<br>Items:<br>";
-echo "Main Hand: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'hand' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Off Hand: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 2 AND slot = 'hand' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Head: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'head' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Torso: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'torso' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Arms: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'arms' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Legs: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'legs' AND owner = '$searchname'"))[name]) . "<br>";
-echo "Feet: " . trim(mysqli_fetch_assoc(mysqli_query($conn,"SELECT CONCAT(pre, ' ', base, ' ', suf) as name FROM Item WHERE equip = 1 AND slot = 'feet' AND owner = '$searchname'"))[name]);
-
-mysqli_close($conn);
-
-?>

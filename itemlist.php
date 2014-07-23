@@ -1,19 +1,45 @@
 <?php
 
-include_once("Includes/checklogin.php");
-include_once('Includes/common.php');
+require_once('/Includes/checklogin.php');
+require_once('/Includes/common.php');
+require_once('/Classes/Item.php');
+require_once('/Includes/menu.php');
 
-$conn=mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
+use \Classes\Item as Item;
 
-echo "Items:<br>";
+$itemList = Item::getAllItems();
 
-$items = mysqli_query($conn,"SELECT * FROM Item");
-echo "<table border='1' style='border-collapse:collapse;' cellpadding='5'><tr><th>ID</th><th>Prefix</th><th>Base</th><th>Suffix</th><th>Owner</th><th>Slot</th><th>Equip</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th></tr>";
+echo "Items:<br/>\n";
 
-while($row = mysqli_fetch_assoc($items)) {
-  echo "<tr><td>" . $row['id'] . "</td><td>" . $row['pre'] . "</td><td>" . $row['base'] . "</td><td>" . $row['suf'] . "</td><td><a href='loadhero.php?searchname=" . $row['owner'] . "'>" . $row['owner'] . "</a></td><td>" . $row['slot'] . "</td><td>" . $row['equip'] . "</td><td>" . $row['sdam'] . "</td><td>" . $row['pdam'] . "</td><td>" . $row['bdam'] . "</td><td>" . $row['sarm'] . "</td><td>" . $row['parm'] . "</td><td>" . $row['barm'] . "</td></tr>";
+echo '<table border="1" style="border-collapse:collapse;" cellpadding="5"><tr><th>Name</th><th>Description</th><th>Slot</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>';
+
+foreach ($itemList as $item) {
+    // cache item values for ease of use
+    $itemName = $item->getFullName();
+    $itemSlot = $item->getSlot();
+    $itemSDAM = $item->getSDAM();
+    $itemPDAM = $item->getPDAM();
+    $itemBDAM = $item->getBDAM();
+    $itemSARM = $item->getSARM();
+    $itemPARM = $item->getPARM();
+    $itemBARM = $item->getBARM();
+    $itemHpRegen = $item->getHpRegen();
+    $itemMpRegen = $item->getMpRegen();
+    $itemDesc = $item->getDescription();
+
+    echo '<tr>';
+    echo "<td>$itemName</td>";
+    echo "<td>$itemDesc</td>";
+    echo "<td>$itemSlot</td>";
+    echo "<td>$itemSDAM</td>";
+    echo "<td>$itemPDAM</td>";
+    echo "<td>$itemBDAM</td>";
+    echo "<td>$itemSARM</td>";
+    echo "<td>$itemPARM</td>";
+    echo "<td>$itemBARM</td>";
+    echo "<td>$itemHpRegen</td>";
+    echo "<td>$itemMpRegen</td>";
+    echo '</tr>';
 }
-echo "</table>";
 
-mysqli_close($conn);
-?>
+echo '</table>';

@@ -10,6 +10,7 @@ namespace Classes;
 
 include_once('Environment.php');
 include_once('Item.php');
+include_once('Inventory.php');
 include_once('InventoryItem.php');
 
 class Hero {
@@ -44,12 +45,14 @@ class Hero {
     private $per;
     private $gold;
     //private $battleplan;
-    private $inventory = array(); // array of InventoryItem
+    private $inventory; // array of InventoryItem
 
     /**
      * Parameterless constructor for internally creating Heroes
      */
-    private function __construct() { }
+    private function __construct() {
+        $this->inventory = new Inventory();
+    }
 
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
@@ -69,6 +72,40 @@ class Hero {
     public function getGold() { return $this->gold; }
     //public function getBattleplan() { return $this->battleplan; } // TODO: implement Battleplan object and enable this function
     public function getInventory() { return $this->inventory; }
+
+    public function getMaxHp() {
+        $hpMult = 1;
+
+        if ($this->race === self::RACE_ELF) $hpMult -= 0.15;
+        elseif ($this->race === self::RACE_ORC) $hpMult += 0.2;
+        elseif ($this->race === self::RACE_HUMAN) $hpMult += 0.1;
+        elseif ($this->race === self::RACE_DWARF) $hpMult += 0.3;
+
+        if ($this->prof === self::PROF_MAGE) $hpMult -= 0.15;
+        elseif ($this->prof === self::PROF_BARBARIAN) $hpMult += 0.3;
+        elseif ($this->prof === self::PROF_ARCHER) $hpMult += 0.1;
+        elseif ($this->prof === self::PROF_KNIGHT) $hpMult += 0.2;
+        elseif ($this->prof === self::PROF_PRIEST) $hpMult -= 0.05;
+
+        return floor((5*$this->con + 3*$this->str)*$hpMult);
+    }
+
+    public function getMaxMp() {
+        $mpMult = 1;
+
+        if ($this->race === self::RACE_ELF) $mpMult += 0.3;
+        elseif ($this->race === self::RACE_ORC) $mpMult -= 0.1;
+        elseif ($this->race === self::RACE_HUMAN) $mpMult += 0.1;
+        elseif ($this->race === self::RACE_DWARF) $mpMult += 0.15;
+
+        if ($this->prof === self::PROF_MAGE) $mpMult += 0.3;
+        elseif ($this->prof === self::PROF_BARBARIAN) $mpMult -= 0.15;
+        elseif ($this->prof === self::PROF_ARCHER) $mpMult += 0.1;
+        elseif ($this->prof === self::PROF_KNIGHT) $mpMult -= 0.05;
+        elseif ($this->prof === self::PROF_PRIEST) $mpMult += 0.2;
+
+        return floor((5*$this->int + 3*$this->wis)*$mpMult);
+    }
 
     public function increaseXp($amount) {
         if (!is_numeric($amount)) return false;
@@ -93,7 +130,7 @@ class Hero {
 
     public function receiveItem($itemName, $equip = 0) {
         if (is_null($this->inventory)) $this->inventory = array();
-        $item = \Classes\Item::getItemByFullName($itemName);
+        $item = Item::getItemByFullName($itemName);
         if (is_null($item)) return false;
 
         $pdo = Environment::getDBConn();
@@ -103,9 +140,15 @@ class Hero {
         $stmt->bindValue(':equip', $equip, \PDO::PARAM_INT);
         if ($stmt->execute() === false) return false;
 
-        array_push($this->inventory, $item);
+        return $this->inventory->append($item);
+    }
 
-        return true;
+    public function unequipInventoryItem($inventoryItem) {
+        return $inventoryItem->setEquip(0);
+    }
+
+    public function equipInventoryItem($inventoryItem) {
+        return $inventoryItem->setEquip(1);
     }
 
     public function dropInventoryItem($inventoryItem) {
@@ -114,14 +157,7 @@ class Hero {
         $stmt->bindValue(':id', $inventoryItem->getId(), \PDO::PARAM_INT);
         if ($stmt->execute() === false) return false; // failed to remove item
 
-        foreach ($this->inventory as $key => $innerItem) {
-            if ($innerItem->getId() === $inventoryItem->getId()) {
-                array_splice($this->inventory, $key, 1);
-                return true;
-            }
-        }
-
-        return false; // failed to remove item from inventory array
+        return $this->inventory->remove($inventoryItem);
     }
 
     public static function getHeroByName($name) {
@@ -187,6 +223,8 @@ class Hero {
         $stmt = $pdo->prepare('DELETE FROM hero WHERE name = :name');
         $pdo = null;
         return $stmt->execute(array(':name' => $name));
+
+        // TODO: must delete inventory as well
     }
 
     private static function loadHeroFromArray($arr) {
@@ -217,7 +255,7 @@ class Hero {
         $stmt->execute(array(':owner' => $hero->id));
         $result = $stmt->fetchAll();
         foreach ($result as $elem) {
-            array_push($hero->inventory, InventoryItem::loadInventoryItemFromArray($elem, array('id' => $elem['inventoryId'], 'equip' => $elem['equip'])));
+            $hero->inventory->append(InventoryItem::loadInventoryItemFromArray($elem, array('id' => $elem['inventoryId'], 'equip' => $elem['equip'])));
         }
 
         return $hero;

@@ -1,8 +1,9 @@
 <?php
 
-include_once("Includes/checklogin.php");
-include_once('Includes/common.php');
-include_once('Classes/Hero.php');
+require_once('/Includes/checklogin.php');
+require_once('/Includes/common.php');
+require_once('/Classes/Hero.php');
+require_once('/Includes/menu.php');
 
 $heroList = \Classes\Hero::getAllHeroes();
 
@@ -30,5 +31,3 @@ foreach ($heroList as $hero) {
 }
 
 echo '</table>'."\r\n";
-
-?>

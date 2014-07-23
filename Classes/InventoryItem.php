@@ -25,8 +25,13 @@ class InventoryItem {
     public function getId() { return $this->id; }
     public function getItem() { return $this->item; }
     public function getEquip() { return $this->equip; }
+    public function isEquipped() { return $this->getEquip() > 0; }
 
     public function setEquip($equip) {
+        if (!($trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)) || !(isset($trace[1]['class']) && in_array($trace[1]['class'], static::$friendClasses))) {
+            trigger_error('Member not available from calling class', E_USER_ERROR);
+        }
+
         if (!is_int($equip)) return false;
         if (!self::updateDBAttribute('equip', $equip, \PDO::PARAM_INT)) return false;
         $this->equip = $equip;
@@ -37,9 +42,6 @@ class InventoryItem {
         if (!($trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)) || !(isset($trace[1]['class']) && in_array($trace[1]['class'], static::$friendClasses))) {
             trigger_error('Member not available from calling class', E_USER_ERROR);
         }
-
-        print_r($itemArr);
-        print_r($inventoryArr);
 
         $item = new InventoryItem();
         $item->id = (int)$inventoryArr['id'];

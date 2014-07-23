@@ -24,6 +24,11 @@ class Login {
         self::setLoggedIn(false);
     }
 
+    public static function getLoggedInHeroName() {
+        if (self::isLoggedIn() AND array_key_exists('heroName', $_SESSION)) return $_SESSION['heroName'];
+        return '';
+    }
+
     /**
      * @param $username
      * @param $password
@@ -45,7 +50,10 @@ class Login {
         // if password hashes match, accept login attempt
         $result = $stmt->fetch();
         $isValid = ($result['pw'] === sha1($password));
-        if ($isValid) self::setLoggedIn(true);
+        if ($isValid) {
+            self::setLoggedIn(true);
+            $_SESSION['heroName'] = $username;
+        }
 
         // close connection
         $pdo = null;

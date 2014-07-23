@@ -14,6 +14,7 @@ include_once('ItemModifier.php');
 class Item {
     protected static $friendClasses = array('Classes\Item', 'Classes\InventoryItem');
 
+    const SLOT_HEAD = "HEAD";
     const SLOT_HAND = "HAND";
     const SLOT_TORSO = "TORSO";
     const SLOT_FEET = "FEET";
@@ -58,7 +59,7 @@ class Item {
     public function getMpRegen() { return $this->mpreg; }
     public function getFullName() {
         $prefix = is_null($this->prefix_modifier) ? '' : $this->prefix_modifier->getName() . ' ';
-        $suffix = is_null($this->suffix_modifier) ? '' : ' a' . $this->suffix_modifier->getName();
+        $suffix = is_null($this->suffix_modifier) ? '' : ' ' . $this->suffix_modifier->getName();
         return $prefix . $this->name . $suffix;
     }
 
@@ -77,6 +78,20 @@ class Item {
         $pdo = null; // close connection
 
         return self::loadItemFromArray($result);
+    }
+
+    public static function getAllItems() {
+        $pdo = Environment::getDBConn();
+        $stmt = $pdo->prepare('SELECT * FROM items');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+
+        $itemList = array();
+        foreach ($result as $row) {
+            array_push($itemList, self::loadItemFromArray($row));
+        }
+
+        return $itemList;
     }
     
     public static function loadItemFromArray($arr) {
