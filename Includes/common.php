@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="/Styles/normalize.css">
-<link rel="stylesheet" type="text/css" href="/Styles/main.css">
+<link rel="stylesheet" type="text/css" href="Styles/normalize.css">
+<link rel="stylesheet" type="text/css" href="Styles/main.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript">
     window.onload = function ()

@@ -24,6 +24,11 @@ class ItemModifier {
     private $hpreg;
     private $mpreg;
 
+    /**
+     * Parameterless constructor for internally creating Heroes
+     */
+    private function __construct() { }
+
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
     public function getType() { return $this->type; }

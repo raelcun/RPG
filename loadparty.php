@@ -1,30 +1,37 @@
 <?php
 
-include_once("Includes/checklogin.php");
-include_once('Includes/common.php');
+require_once('/Includes/checklogin.php');
+require_once('/Includes/common.php');
+require_once('/Includes/menu.php');
+require_once('/Classes/Party.php');
 
-echo "<form name='partysearch' action='loadparty.php' method='GET'><input type='text' name='searchname'><input type='submit' value='Submit'></form>";
+use \Classes\Party as Party;
 
-if(!isset($_GET['searchname'])) { exit(); }
+echo '<form name="partySearch" action="loadparty.php" method="GET">';
+echo '<input type="text" name="partyName">';
+echo '<input type="submit" value="Submit">';
+echo '</form>';
 
-$conn=mysqli_connect("ucfsh.ucfilespace.uc.edu","piattjd","curtis1","piattjd");
+if (array_key_exists('partyName', $_GET)) {
+    $party = Party::getPartyByName($_GET['partyName']);
+    if (is_null($party)) { echo 'Party '.$_GET['partyName'].' not found'; exit(); }
 
-$searchname=mysqli_real_escape_string($conn, trim($_GET['searchname']));
+    // cache party values for ease of use
+    $partyName = $party->getName();
+    $partyCooldown = $party->getCooldown();
+    $partyMemberNames = $party->getMemberNames();
+    $partyApplicants = $party->getApplicants();
 
-$party = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM Party WHERE name = '$searchname'"));
-mysqli_close($conn);
+    echo "Party: $partyName";
+    echo "Cooldown: ".$partyCooldown;
+    echo "<br/>Count: ".count($partyMemberNames);
+    echo "<br/>";
 
-$party[hero1] = explode("|", $party[heroes])[0];
-$party[hero2] = explode("|", $party[heroes])[1];
-$party[hero3] = explode("|", $party[heroes])[2];
-$party[hero4] = explode("|", $party[heroes])[3];
-$party[hero5] = explode("|", $party[heroes])[4];
-$party[hero6] = explode("|", $party[heroes])[5];
+    echo '<table><tr><th>Hero Name</th></tr>';
 
-echo "<h1>$party[name]<h1>";
+    foreach ($partyMemberNames as $name) {
+        echo "<tr><td><a href=\"loadhero.php?searchName=$name\">$name</a></td></tr>";
+    }
 
-echo "<table border='1' style='border-collapse:collapse;' cellpadding='5'><tr><th>Cooldown</th><th>Hero 1</th><th>Hero 2</th><th>Hero 3</th><th>Hero 4</th><th>Hero 5</th><th>Hero 6</th></tr>";
-echo "<tr><td>$party[cd]</td><td><a href='loadhero.php?searchname=$party[hero1]'>$party[hero1]</a></td><td><a href='loadhero.php?searchname=$party[hero2]'>$party[hero2]</a></td><td><a href='loadhero.php?searchname=$party[hero3]'>$party[hero3]</a></td><td><a href='loadhero.php?searchname=$party[hero4]'>$party[hero4]</a></td><td><a href='loadhero.php?searchname=$party[hero5]'>$party[hero5]</a></td><td><a href='loadhero.php?searchname=$party[hero6]'>$party[hero6]</a></td></tr>";
-echo "</table>";
-
-?>
+    echo '</table>';
+}

@@ -30,7 +30,7 @@ if (array_key_exists('itemName', $_GET)) {
     $itemDesc = $item->getDescription();
 
     echo "<br/>Item:\n";
-    echo "<table border='1' style='border-collapse:collapse;' cellpadding='5'><tr><th>Name</th><th>Slot</th><th>Description</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>\n";
+    echo "<table><tr><th>Name</th><th>Slot</th><th>Description</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>\n";
     echo "<tr>\n";
     echo "<td>$itemName</td>\n";
     echo "<td>$itemSlot</td>\n";

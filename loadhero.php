@@ -54,24 +54,24 @@ if(!array_key_exists('searchName', $_GET)) { // show form if no hero has been se
     $heroOffHandName = count($heroOffHand) === 0 ? 'None' : $heroOffHand[0]->getItem()->getFullName();
 
     $heroHead = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_HEAD; });
-    $heroHeadName = count($heroHead) === 0 ? 'None' : $heroHead[0]->getItem->getFullName();
+    $heroHeadName = count($heroHead) === 0 ? 'None' : $heroHead[0]->getItem()->getFullName();
 
     $heroTorso = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_TORSO; });
-    $heroTorsoName = count($heroTorso) === 0 ? 'None' : $heroTorso[0]->getItem->getFullName();
+    $heroTorsoName = count($heroTorso) === 0 ? 'None' : $heroTorso[0]->getItem()->getFullName();
 
     $heroArms = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_ARMS; });
-    $heroArmsName = count($heroArms) === 0 ? 'None' : $heroArms[0]->getItem->getFullName();
+    $heroArmsName = count($heroArms) === 0 ? 'None' : $heroArms[0]->getItem()->getFullName();
 
     $heroLegs = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_LEGS; });
-    $heroLegsName = count($heroLegs) === 0 ? 'None' : $heroLegs[0]->getItem->getFullName();
+    $heroLegsName = count($heroLegs) === 0 ? 'None' : $heroLegs[0]->getItem()->getFullName();
 
     $heroFeet = $hero->getInventory()->where(function($item) { return $item->getItem()->getSlot() === Item::SLOT_FEET; });
-    $heroFeetName = count($heroFeet) === 0 ? 'None' : $heroFeet[0]->getItem->getFullName();
+    $heroFeetName = count($heroFeet) === 0 ? 'None' : $heroFeet[0]->getItem()->getFullName();
 
 
 
     echo "Hero:<br />\n";
-    echo "<table border=\"1\" style=\"border-collapse:collapse;\" cellpadding=\"5\"><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>";
+    echo "<table><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>";
     echo "<tr>\n";
     echo "<td><a href=\"loadhero.php?searchName=$heroName\">$heroName</a></td>\n";
     echo "<td>$heroRace</td>\n";

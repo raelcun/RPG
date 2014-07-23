@@ -8,7 +8,7 @@ require_once('/Includes/menu.php');
 $heroList = \Classes\Hero::getAllHeroes();
 
 echo 'Heroes:<br />';
-echo '<table border=\'1\' style=\'border-collapse:collapse;\' cellpadding=\'5\'><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>';
+echo '<table><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>';
 
 foreach ($heroList as $hero) {
     echo '<tr>'."\r\n";

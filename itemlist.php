@@ -11,7 +11,7 @@ $itemList = Item::getAllItems();
 
 echo "Items:<br/>\n";
 
-echo '<table border="1" style="border-collapse:collapse;" cellpadding="5"><tr><th>Name</th><th>Description</th><th>Slot</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>';
+echo '<table><tr><th>Name</th><th>Description</th><th>Slot</th><th>S. Dmg</th><th>P. Dmg</th><th>B. Dmg</th><th>S. Arm</th><th>P. Arm</th><th>B. Arm</th><th>HP Regen</th><th>MP Regen</th></tr>';
 
 foreach ($itemList as $item) {
     // cache item values for ease of use
