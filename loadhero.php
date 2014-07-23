@@ -8,10 +8,10 @@ require_once('/Includes/menu.php');
 use \Classes\Hero as Hero;
 use \Classes\Item as Item;
 
-if(!array_key_exists('searchName', $_GET)) { // show form if no hero has been selected to be shown
-    echo "<form name='herosearch' action='loadhero.php' method='GET'><input type='text' name='searchName'><input type='submit' value='Submit'></form>";
+if(!array_key_exists('name', $_GET)) { // show form if no hero has been selected to be shown
+    echo "<form name='herosearch' action='loadhero.php' method='GET'><input type='text' name='name'><input type='submit' value='Submit'></form>";
 } else { // if hero has been selected to be shown...
-    $heroName = $_GET['searchName'];
+    $heroName = $_GET['name'];
     if (!Hero::doesHeroExist($heroName)) { echo "Hero does not exist!"; exit(); }
 
     // get hero information from the database
@@ -73,7 +73,7 @@ if(!array_key_exists('searchName', $_GET)) { // show form if no hero has been se
     echo "Hero:<br />\n";
     echo "<table><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th><th>Party</th><th>Strength</th><th>Intelligence</th><th>Dexterity</th><th>Agility</th><th>Wisdom</th><th>Perception</th><th>Action</th><th>Constitution</th><th>Charisma</th><th>Gold</th></tr>";
     echo "<tr>\n";
-    echo "<td><a href=\"loadhero.php?searchName=$heroName\">$heroName</a></td>\n";
+    echo "<td><a href=\"loadhero.php?name=$heroName\">$heroName</a></td>\n";
     echo "<td>$heroRace</td>\n";
     echo "<td>$heroProf</td>\n";
     echo "<td>$heroXp</td>\n";

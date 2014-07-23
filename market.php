@@ -27,7 +27,7 @@ foreach ($itemList as $item) {
     $itemDesc = $item->getDescription();
 
     echo '<tr>';
-    echo "<td>$itemName</td>";
+    echo "<td><a href=\"loaditem.php?name=$itemName\">$itemName</a></td>";
     echo "<td>$itemDesc</td>";
     echo "<td>$itemCost</td>";
     echo "<td>$itemSlot</td>";

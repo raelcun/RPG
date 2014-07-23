@@ -8,13 +8,13 @@ require_once('/Classes/Party.php');
 use \Classes\Party as Party;
 
 echo '<form name="partySearch" action="loadparty.php" method="GET">';
-echo '<input type="text" name="partyName">';
+echo '<input type="text" name="name">';
 echo '<input type="submit" value="Submit">';
 echo '</form>';
 
-if (array_key_exists('partyName', $_GET)) {
-    $party = Party::getPartyByName($_GET['partyName']);
-    if (is_null($party)) { echo 'Party '.$_GET['partyName'].' not found'; exit(); }
+if (array_key_exists('name', $_GET)) {
+    $party = Party::getPartyByName($_GET['name']);
+    if (is_null($party)) { echo 'Party '.$_GET['name'].' not found'; exit(); }
 
     // cache party values for ease of use
     $partyName = $party->getName();
@@ -30,7 +30,7 @@ if (array_key_exists('partyName', $_GET)) {
     echo '<table><tr><th>Hero Name</th></tr>';
 
     foreach ($partyMemberNames as $name) {
-        echo "<tr><td><a href=\"loadhero.php?searchName=$name\">$name</a></td></tr>";
+        echo "<tr><td><a href=\"loadhero.php?name=$name\">$name</a></td></tr>";
     }
 
     echo '</table>';

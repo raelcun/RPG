@@ -12,7 +12,7 @@ echo '<table><tr><th>Name</th><th>Race</th><th>Profession</th><th>Experience</th
 
 foreach ($heroList as $hero) {
     echo '<tr>'."\r\n";
-    echo '<td><a href=\'loadhero.php?searchname='.$hero->getName().'\'>'.$hero->getName().'</a></td>'."\r\n";
+    echo '<td><a href=\'loadhero.php?name='.$hero->getName().'\'>'.$hero->getName().'</a></td>'."\r\n";
     echo '<td>'.$hero->getRace().'</td>'."\r\n";
     echo '<td>'.$hero->getProfession().'</td>'."\r\n";
     echo '<td>'.$hero->getXp().'</td>'."\r\n";

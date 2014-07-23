@@ -69,8 +69,8 @@ class Item {
             SELECT
               i.*
             FROM items i
-            LEFT JOIN item_modifiers im_prefix ON i.prefix_modifier = im_prefix.id
-            LEFT JOIN item_modifiers im_suffix ON i.suffix_modifier = im_suffix.id
+            LEFT JOIN itemmodifiers im_prefix ON i.prefix_modifier = im_prefix.id
+            LEFT JOIN itemmodifiers im_suffix ON i.suffix_modifier = im_suffix.id
             WHERE UPPER(TRIM(CONCAT(IFNULL(im_prefix.name, \'\'), \' \', i.name, \' \', IFNULL(im_suffix.name, \'\')))) = UPPER(:fullname)');
         $stmt->execute(array(':fullname' => $fullname));
         if ($stmt->rowCount() === 0) return null;

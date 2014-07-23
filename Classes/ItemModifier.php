@@ -59,7 +59,7 @@ class ItemModifier {
         $pdo = Environment::getDBConn();
         $stmt = $pdo->prepare('
             SELECT *
-            FROM item_modifiers
+            FROM itemmodifiers
             WHERE id = :id');
         $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
         $stmt->execute();
