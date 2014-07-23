@@ -48,7 +48,10 @@ function change(from, row, col) {
 </script>
 <?php
 
-include_once("Includes/checklogin.php");
+// if not logged in, redirect to login page
+require_once('Classes/Login.php');
+if (\Classes\Login::isLoggedIn() === false) header('Location: login.php');
+
 include_once('Includes/common.php');
 
 if(isset($_GET['plans'])) {

@@ -19,13 +19,8 @@ if (array_key_exists('name', $_POST)
     if (\Classes\Hero::doesHeroExist($_POST['name']) === true) {
         echo 'Hero name already exists';
     } else {
-        // validate race and profession
-        if (\Classes\Hero::parseRace($_POST['race']) === false) { echo 'Invalid race'; exit(0); }
-        if (\Classes\Hero::parseProfession($_POST['prof']) === false) { echo 'Invalid profession'; exit(0); }
-
         // try to create hero
-        $hero = \Classes\Hero::createHero($_POST['name'], $_POST['pw']);
-        $hero->initialize($_POST['race'], $_POST['prof']);
+        $hero = \Classes\Hero::createHero($_POST['name'], $_POST['pw'], $_POST['race'], $_POST['prof']);
 
         // log in with newly created hero
         \Classes\Login::logIn($_POST['name'], $_POST['pw']);

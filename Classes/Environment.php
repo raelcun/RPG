@@ -67,7 +67,7 @@ class Environment {
                 return "piattjd";
             case self::MODE_DET_DEV:
             default:
-                return "piattjd";
+                return "rpg";
         }
     }
 
