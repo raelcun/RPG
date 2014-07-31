@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 23, 2014 at 04:38 AM
+-- Generation Time: Jul 31, 2014 at 05:53 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -29,11 +29,18 @@ USE `rpg`;
 --
 
 CREATE TABLE IF NOT EXISTS `dungeons` (
-  `dID` char(30) COLLATE latin1_general_cs NOT NULL,
+  `dID` int(11) NOT NULL AUTO_INCREMENT,
   `rooms` char(30) COLLATE latin1_general_cs NOT NULL,
   `loot` char(30) COLLATE latin1_general_cs NOT NULL,
   PRIMARY KEY (`dID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `dungeons`
+--
+
+INSERT INTO `dungeons` (`dID`, `rooms`, `loot`) VALUES
+(1, '1', 'Spellbook');
 
 -- --------------------------------------------------------
 
@@ -42,14 +49,29 @@ CREATE TABLE IF NOT EXISTS `dungeons` (
 --
 
 CREATE TABLE IF NOT EXISTS `enemies` (
-  `eID` char(30) COLLATE latin1_general_cs NOT NULL,
-  `hp` int(11) NOT NULL,
-  `damage` int(11) NOT NULL,
-  `aoeradius` int(11) NOT NULL,
-  `aoedecay` int(11) NOT NULL,
-  `xp` int(11) NOT NULL,
-  `loot` char(30) COLLATE latin1_general_cs NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+  `eID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(30) COLLATE latin1_general_cs NOT NULL,
+  `race` char(30) COLLATE latin1_general_cs NOT NULL,
+  `prof` char(30) COLLATE latin1_general_cs NOT NULL,
+  `str` int(11) NOT NULL DEFAULT '1',
+  `con` int(11) NOT NULL DEFAULT '1',
+  `agi` int(11) NOT NULL DEFAULT '1',
+  `dex` int(11) NOT NULL DEFAULT '1',
+  `int` int(11) NOT NULL DEFAULT '1',
+  `wis` int(11) NOT NULL DEFAULT '1',
+  `cha` int(11) NOT NULL DEFAULT '1',
+  `act` int(11) NOT NULL DEFAULT '1',
+  `per` char(11) COLLATE latin1_general_cs NOT NULL DEFAULT '1',
+  `battleplan` text COLLATE latin1_general_cs NOT NULL,
+  PRIMARY KEY (`eID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `enemies`
+--
+
+INSERT INTO `enemies` (`eID`, `name`, `race`, `prof`, `str`, `con`, `agi`, `dex`, `int`, `wis`, `cha`, `act`, `per`, `battleplan`) VALUES
+(1, 'Rat', 'Vermin', 'Rat', 1, 1, 1, 1, 1, 1, 1, 1, '1', '');
 
 -- --------------------------------------------------------
 
@@ -77,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `hero` (
   `gold` int(11) NOT NULL DEFAULT '50',
   `battleplan` char(255) COLLATE latin1_general_cs NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=24 ;
 
 --
 -- Dumping data for table `hero`
@@ -100,21 +122,44 @@ INSERT INTO `hero` (`id`, `name`, `pw`, `race`, `prof`, `xp`, `party`, `str`, `c
 (18, 'asdf', '3da541559918a808c2402bba5012f6c60b27661c', 'Human', 'Barbarian', 0, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 50, ''),
 (19, 'Durkon', '3da541559918a808c2402bba5012f6c60b27661c', 'Dwarf', 'Priest', 0, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 50, ''),
 (21, 'knight', '3da541559918a808c2402bba5012f6c60b27661c', 'Orc', 'Knight', 0, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 50, ''),
-(22, 'Dan', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'Human', 'Mage', 50, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 5000, '');
+(22, 'Dan', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'Human', 'Mage', 50, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 5000, ''),
+(23, 'Dan2', '6367c48dd193d56ea7b0baad25b19455e529f5ee', 'Human', 'Barbarian', 0, '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 50, '');
 
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `hero_inventory`
+-- Table structure for table `heroinventory`
 --
-CREATE TABLE IF NOT EXISTS `hero_inventory` (
-`heroId` int(11)
-,`heroName` char(30)
-,`itemPrefix` char(30)
-,`itemName` char(30)
-,`itemSuffix` char(30)
-,`equip` tinyint(1)
-);
+
+CREATE TABLE IF NOT EXISTS `heroinventory` (
+  `heroId` int(11) DEFAULT NULL,
+  `heroName` char(30) COLLATE latin1_general_cs DEFAULT NULL,
+  `itemPrefix` char(30) COLLATE latin1_general_cs DEFAULT NULL,
+  `itemName` char(30) COLLATE latin1_general_cs DEFAULT NULL,
+  `itemSuffix` char(30) COLLATE latin1_general_cs DEFAULT NULL,
+  `equip` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `heroskills`
+--
+
+CREATE TABLE IF NOT EXISTS `heroskills` (
+  `skillID` int(11) NOT NULL,
+  `heroID` int(11) NOT NULL,
+  `level` int(11) NOT NULL,
+  PRIMARY KEY (`skillID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+--
+-- Dumping data for table `heroskills`
+--
+
+INSERT INTO `heroskills` (`skillID`, `heroID`, `level`) VALUES
+(1, 1, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -127,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   `owner` int(11) NOT NULL,
   `equip` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=66 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=71 ;
 
 --
 -- Dumping data for table `inventory`
@@ -151,7 +196,46 @@ INSERT INTO `inventory` (`id`, `item`, `owner`, `equip`) VALUES
 (21, 9, 11, 1),
 (63, 10, 22, 1),
 (64, 7, 22, 0),
-(65, 14, 22, 2);
+(65, 14, 22, 2),
+(66, 1, 23, 0),
+(67, 5, 23, 0),
+(68, 4, 23, 0),
+(69, 2, 23, 0),
+(70, 3, 23, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `itemmodifiers`
+--
+
+CREATE TABLE IF NOT EXISTS `itemmodifiers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(30) COLLATE latin1_general_cs NOT NULL,
+  `type` char(30) COLLATE latin1_general_cs NOT NULL,
+  `des` char(255) COLLATE latin1_general_cs NOT NULL DEFAULT '',
+  `sdam` int(11) NOT NULL DEFAULT '0',
+  `pdam` int(11) NOT NULL DEFAULT '0',
+  `bdam` int(11) NOT NULL DEFAULT '0',
+  `sarm` int(11) NOT NULL DEFAULT '0',
+  `parm` int(11) NOT NULL DEFAULT '0',
+  `barm` int(11) NOT NULL DEFAULT '0',
+  `hpreg` int(11) NOT NULL DEFAULT '0',
+  `mpreg` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=23 ;
+
+--
+-- Dumping data for table `itemmodifiers`
+--
+
+INSERT INTO `itemmodifiers` (`id`, `name`, `type`, `des`, `sdam`, `pdam`, `bdam`, `sarm`, `parm`, `barm`, `hpreg`, `mpreg`) VALUES
+(8, 'of Fire', 'suffix', 'This one is made of fire.', 0, 0, 0, 0, 0, 0, -1, 0),
+(10, 'Bludgeoning', 'prefix', 'This one is heavy.', 0, 0, 2, 0, 0, 0, 0, 0),
+(15, 'Rusty', 'prefix', 'This one is rusty.', -1, 0, 0, 0, 0, 0, 0, 0),
+(17, 'Bent', 'prefix', 'This one is bent.', 0, -1, 0, 0, 0, 0, 0, 0),
+(18, 'Weak', 'prefix', 'This one is weaker than normal.', 0, 0, 0, -1, -1, -1, 0, 0),
+(22, 'Frail', 'prefix', 'This one feels like it will fall apart.', 0, 0, -1, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -205,40 +289,6 @@ INSERT INTO `items` (`id`, `name`, `prefix_modifier`, `suffix_modifier`, `slot`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `item_modifiers`
---
-
-CREATE TABLE IF NOT EXISTS `item_modifiers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` char(30) COLLATE latin1_general_cs NOT NULL,
-  `type` char(30) COLLATE latin1_general_cs NOT NULL,
-  `des` char(255) COLLATE latin1_general_cs NOT NULL DEFAULT '',
-  `sdam` int(11) NOT NULL DEFAULT '0',
-  `pdam` int(11) NOT NULL DEFAULT '0',
-  `bdam` int(11) NOT NULL DEFAULT '0',
-  `sarm` int(11) NOT NULL DEFAULT '0',
-  `parm` int(11) NOT NULL DEFAULT '0',
-  `barm` int(11) NOT NULL DEFAULT '0',
-  `hpreg` int(11) NOT NULL DEFAULT '0',
-  `mpreg` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=23 ;
-
---
--- Dumping data for table `item_modifiers`
---
-
-INSERT INTO `item_modifiers` (`id`, `name`, `type`, `des`, `sdam`, `pdam`, `bdam`, `sarm`, `parm`, `barm`, `hpreg`, `mpreg`) VALUES
-(8, 'of Fire', 'suffix', 'This one is made of fire.', 0, 0, 0, 0, 0, 0, -1, 0),
-(10, 'Bludgeoning', 'prefix', 'This one is heavy.', 0, 0, 2, 0, 0, 0, 0, 0),
-(15, 'Rusty', 'prefix', 'This one is rusty.', -1, 0, 0, 0, 0, 0, 0, 0),
-(17, 'Bent', 'prefix', 'This one is bent.', 0, -1, 0, 0, 0, 0, 0, 0),
-(18, 'Weak', 'prefix', 'This one is weaker than normal.', 0, 0, 0, -1, -1, -1, 0, 0),
-(22, 'Frail', 'prefix', 'This one feels like it will fall apart.', 0, 0, -1, 0, 0, 0, 0, 0);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `messages`
 --
 
@@ -251,14 +301,15 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `timestamp` char(30) COLLATE latin1_general_cs NOT NULL,
   `unread` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=24 ;
 
 --
 -- Dumping data for table `messages`
 --
 
 INSERT INTO `messages` (`id`, `receiver`, `sender`, `subject`, `message`, `timestamp`, `unread`) VALUES
-(20, 'asdf', 'asdf', 'test2', 'test2', '04-07-14 15:33:06', 0);
+(20, 'asdf', 'asdf', 'test2', 'test2', '04-07-14 15:33:06', 0),
+(23, 'fizh', 'Otto', 'hey', 'sup', '05-07-14 16:36:52', 1);
 
 -- --------------------------------------------------------
 
@@ -273,7 +324,7 @@ CREATE TABLE IF NOT EXISTS `party` (
   `applicants` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `party`
@@ -285,11 +336,77 @@ INSERT INTO `party` (`id`, `name`, `cd`, `applicants`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure for view `hero_inventory`
+-- Table structure for table `rooms`
 --
-DROP TABLE IF EXISTS `hero_inventory`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `hero_inventory` AS select `hero`.`id` AS `heroId`,`hero`.`name` AS `heroName`,`prefix`.`name` AS `itemPrefix`,`item`.`name` AS `itemName`,`suffix`.`name` AS `itemSuffix`,`inv`.`equip` AS `equip` from ((((`inventory` `inv` left join `hero` on((`inv`.`owner` = `hero`.`id`))) left join `items` `item` on((`inv`.`item` = `item`.`id`))) left join `item_modifiers` `prefix` on((`item`.`prefix_modifier` = `prefix`.`id`))) left join `item_modifiers` `suffix` on((`item`.`suffix_modifier` = `suffix`.`id`))) order by `hero`.`id`;
+CREATE TABLE IF NOT EXISTS `rooms` (
+  `rID` int(11) NOT NULL AUTO_INCREMENT,
+  `length` int(11) NOT NULL,
+  `width` int(11) NOT NULL,
+  `enemies` text COLLATE latin1_general_cs NOT NULL,
+  PRIMARY KEY (`rID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `rooms`
+--
+
+INSERT INTO `rooms` (`rID`, `length`, `width`, `enemies`) VALUES
+(1, 5, 5, 'Rat|Rat|Rat|Rat|Rat');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skills`
+--
+
+CREATE TABLE IF NOT EXISTS `skills` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(30) COLLATE latin1_general_cs NOT NULL,
+  `prof` char(30) COLLATE latin1_general_cs NOT NULL,
+  `cost` text COLLATE latin1_general_cs NOT NULL,
+  `effect` text COLLATE latin1_general_cs NOT NULL,
+  `type` text COLLATE latin1_general_cs NOT NULL,
+  `range` text COLLATE latin1_general_cs NOT NULL,
+  `duration` text COLLATE latin1_general_cs NOT NULL,
+  `targets` text COLLATE latin1_general_cs NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs AUTO_INCREMENT=9 ;
+
+--
+-- Dumping data for table `skills`
+--
+
+INSERT INTO `skills` (`id`, `name`, `prof`, `cost`, `effect`, `type`, `range`, `duration`, `targets`) VALUES
+(1, 'Immolate', 'Mage', '5', '{skill level}', 'fire damage', '5', '{skill level}/3', '1'),
+(2, 'Healing Hands', 'Priest', '4', '-{skill level}*2', 'pure damage', '{skill level}/3', '0', '1'),
+(3, 'Bulwark', 'Knight', '3', '{skill level}/2', 'armor buff', '0', '{skill level}', '1'),
+(4, 'Barrage', 'Archer', '4', '{skill level}', 'piercing damage', '8', '0', '{skill level}/2'),
+(5, 'Troll Blood', 'Barbarian', '0', '-{skill level}/2', 'pure damage', '0', 'passive', '1'),
+(6, 'Mana Regeneration Level 1', 'Mage', '', 'mpRegen*1.4', 'passive', '', '', ''),
+(7, 'Mana Regeneration Level 2', 'Mage', '', 'mpRegen*1.8', 'passive', '', '', ''),
+(8, 'Mana Regeneration Level 3', 'Mage', '', 'mpRegen*2.2', 'passive', '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skilltree`
+--
+
+CREATE TABLE IF NOT EXISTS `skilltree` (
+  `FromSkillId` int(11) NOT NULL,
+  `ToSkillId` int(11) NOT NULL,
+  `XPRequired` int(11) NOT NULL,
+  PRIMARY KEY (`FromSkillId`,`ToSkillId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `skilltree`
+--
+
+INSERT INTO `skilltree` (`FromSkillId`, `ToSkillId`, `XPRequired`) VALUES
+(6, 7, 100),
+(7, 8, 150);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
