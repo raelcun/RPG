@@ -12,6 +12,8 @@ include_once('Environment.php');
 include_once('Item.php');
 include_once('Inventory.php');
 include_once('InventoryItem.php');
+include_once('HeroSkills.php');
+include_once('Skill.php');
 
 class Hero {
 
@@ -45,21 +47,40 @@ class Hero {
     private $per;
     private $gold;
     //private $battleplan;
-    private $inventory; // array of InventoryItem
+    private $inventory; // instance of Inventory
+    private $skills; // instance of HeroSkills
 
     /**
      * Parameterless constructor for internally creating Heroes
      */
     private function __construct() {
         $this->inventory = new Inventory();
+        $this->skills = new HeroSkills();
     }
 
+    // get basic data
     public function getId() { return $this->id; }
     public function getName() { return $this->name; }
     public function getRace() { return $this->race; }
     public function getProfession() { return $this->prof; }
     public function getXp() { return $this->xp; }
     public function getParty() { return $this->party; }
+    public function getGold() { return $this->gold; }
+    public function getInventory() { return $this->inventory; }
+    public function getSkills() { return $this->skills; }
+
+    // get base stats
+    public function getBaseStrength() { return $this->str; }
+    public function getBaseConstitution() { return $this->con; }
+    public function getBaseAgility() { return $this->agi; }
+    public function getBaseDexterity() { return $this->dex; }
+    public function getBaseIntelligence() { return $this->int; }
+    public function getBaseWisdom() { return $this->wis; }
+    public function getBaseCharisma() { return $this->cha; }
+    public function getBaseActions() { return $this->act; }
+    public function getBasePerception() { return $this->per; }
+
+    // get stats adjusted for items
     public function getStrength() { return $this->str; }
     public function getConstitution() { return $this->con; }
     public function getAgility() { return $this->agi; }
@@ -69,9 +90,33 @@ class Hero {
     public function getCharisma() { return $this->cha; }
     public function getActions() { return $this->act; }
     public function getPerception() { return $this->per; }
-    public function getGold() { return $this->gold; }
+
+    public function getSDAM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getSDAM(); }, $this->inventory->getEquippedItems()));
+    }
+
+    public function getPDAM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getPDAM(); }, $this->inventory->getEquippedItems()));
+    }
+
+    public function getBDAM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getBDAM(); }, $this->inventory->getEquippedItems()));
+    }
+
+    public function getSARM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getSARM(); }, $this->inventory->getEquippedItems()));
+    }
+
+    public function getPARM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getPARM(); }, $this->inventory->getEquippedItems()));
+    }
+
+    public function getBARM() {
+        return array_sum(array_map(function ($inventoryItem) { return $inventoryItem->getItem()->getBARM(); }, $this->inventory->getEquippedItems()));
+    }
+
     //public function getBattleplan() { return $this->battleplan; } // TODO: implement Battleplan object and enable this function
-    public function getInventory() { return $this->inventory; }
+
 
     public function getMaxHp() {
         $hpMult = 1;
@@ -256,6 +301,18 @@ class Hero {
         $result = $stmt->fetchAll();
         foreach ($result as $elem) {
             $hero->inventory->append(InventoryItem::loadInventoryItemFromArray($elem, array('id' => $elem['inventoryId'], 'equip' => $elem['equip'])));
+        }
+
+        $stmt = $pdo->prepare('
+            SELECT sl.*
+            FROM heroSkills AS hs
+            INNER JOIN skillList AS sl ON hs.skillId = sl.id
+            WHERE hs.heroId = :heroId');
+        $stmt->execute(array(':heroId' => $hero->id));
+        $result = $stmt->fetchAll();
+        $pdo = null;
+        foreach ($result as $elem) {
+            $hero->skills->append(Skill::loadSkillFromArray($elem));
         }
 
         return $hero;

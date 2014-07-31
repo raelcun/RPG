@@ -51,6 +51,10 @@ class Inventory extends \ArrayObject {
         return $retArr;
     }
 
+    public function getEquippedItems() {
+        return $this->where(function ($inventoryItem) { return $inventoryItem->getEquip() >= 1; });
+    }
+
     public function getTotalMpRegen() { return array_sum(array_map(function ($i) { return $i->getEquip() === 0 ? 0 : $i->getItem()->getMpRegen(); }, parent::getArrayCopy())); }
     public function getTotalHpRegen() { return array_sum(array_map(function ($i) { return $i->getEquip() === 0 ? 0 : $i->getItem()->getHpRegen(); }, parent::getArrayCopy())); }
     public function getTotalSDAM() { return array_sum(array_map(function ($i) { return $i->getEquip() === 0 ? 0 : $i->getItem()->getSDAM(); }, parent::getArrayCopy())); }
